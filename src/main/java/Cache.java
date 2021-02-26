@@ -129,12 +129,10 @@ public class Cache extends BaseOperator {
             if (!messages2.isEmpty()) {
                 System.out.println("send window: " + messages2.size() + " and remainders: " + messages.size());
                 messages2.addAll(messages);
-//                message.output("output", toJSON(messages2));
                 outputMessage(message, messages2);
                 messages2.clear();
             } else {
                 System.out.println("send remainders: " + messages.size());
-//                message.output("output", toJSON(messages));
                 outputMessage(message, messages);
             }
             messages.clear();
@@ -144,7 +142,6 @@ public class Cache extends BaseOperator {
                     startTimestamp = currentTimestamp;
                     if (!messages2.isEmpty()) {
                         System.out.println("send window: " + messages2.size());
-//                        message.output("output", toJSON(messages2));
                         outputMessage(message, messages2);
                         messages2.clear();
                     }
