@@ -26,7 +26,11 @@ import org.infai.ses.senergy.util.DateParser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.zip.GZIPOutputStream;
 
 
