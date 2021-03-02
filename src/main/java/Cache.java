@@ -85,10 +85,21 @@ public class Cache extends BaseOperator {
         return Base64.getEncoder().withoutPadding().encodeToString(bytes);
     }
 
-    private String toJSON(List<Map<String, Object>> messages) {
+    private String toJSON(Set<String> data) {
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        Type collectionType = new TypeToken<Set<String>>(){}.getType();
+        return gson.toJson(data, collectionType);
+    }
+
+    private String toJSON(List<Map<String, Object>> data) {
         Gson gson = new GsonBuilder().serializeNulls().create();
         Type collectionType = new TypeToken<List<Map<String, Object>>>(){}.getType();
-        return gson.toJson(messages, collectionType);
+        return gson.toJson(data, collectionType);
+    }
+
+    private void outputMessage(Message message) {
+        message.output(cacheOutput, null);
+        message.output(metaOutput, null);
     }
 
     private void outputMessage(Message message, List<Map<String, Object>> messages) {
@@ -134,7 +145,7 @@ public class Cache extends BaseOperator {
                 }
             }
         }
-        message.output(cacheOutput, null);
+        outputMessage(message);
         if (batchPos.equals(batchPosEnd)) {
             messages.add(msg);
             if (!messages2.isEmpty()) {
