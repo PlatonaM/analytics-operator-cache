@@ -18,7 +18,6 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import org.apache.kafka.common.protocol.types.Field;
 import org.infai.ses.senergy.exceptions.NoValueException;
 import org.infai.ses.senergy.operators.BaseOperator;
 import org.infai.ses.senergy.operators.Message;
