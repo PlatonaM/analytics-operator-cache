@@ -9,5 +9,5 @@ Cache messages from a batch upload and output collected messages as a single mes
 + `batch_pos_start`: keyword for batch start.
 + `batch_pos_end`: keyword for batch end.
 + `time_window`: relative window in seconds for caching messages.
-+ `compress_output`: compress output messages `true` / `false`.
++ `compressed_output`: compressed output messages `true` / `false`.
 
