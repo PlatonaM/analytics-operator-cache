@@ -129,6 +129,7 @@ public class Cache extends BaseOperator {
                 }
             }
         }
+        message.output(cacheOutput, null);
         if (batchPos.equals(batchPosEnd)) {
             messages.add(msg);
             if (!messages2.isEmpty()) {
