@@ -31,7 +31,7 @@ public class Operator {
                 config.getConfigValue("batch_pos_start", null),
                 config.getConfigValue("batch_pos_end", null),
                 Long.parseLong(config.getConfigValue("time_window", "0")),
-                Boolean.parseBoolean(config.getConfigValue("compress_output", "false")),
+                Boolean.parseBoolean(config.getConfigValue("compressed_output", "false")),
                 inputParser.getInputSources(),
                 inputParser.getInputs()
         );
