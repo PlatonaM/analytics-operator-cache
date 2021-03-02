@@ -101,6 +101,7 @@ public class Cache extends BaseOperator {
         } else {
             message.output(cacheOutput, toJSON(messages));
         }
+        message.output(metaOutput, toJSON(inputSources));
     }
 
     @Override
