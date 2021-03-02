@@ -48,6 +48,7 @@ public class Cache extends BaseOperator {
     private final Map<String, String> inputMap;
     private final List<Map<String, Object>> messages = new ArrayList<>();
     private final List<Map<String, Object>> messages2 = new ArrayList<>();
+    private final String cacheOutput = "output";
 
     public Cache(String timeInput, String batchPosInput, String batchPosStart, String batchPosEnd, long timeWindow, boolean compressOutput, Map<String, String> inputMap) throws Exception {
         if (timeInput == null || timeInput.isBlank()) {
@@ -89,12 +90,12 @@ public class Cache extends BaseOperator {
     private void outputMessage(Message message, List<Map<String, Object>> messages) {
         if (compressOutput) {
             try {
-                message.output("output", compress(toJSON(messages)));
+                message.output(cacheOutput, compress(toJSON(messages)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            message.output("output", toJSON(messages));
+            message.output(cacheOutput, toJSON(messages));
         }
     }
 
