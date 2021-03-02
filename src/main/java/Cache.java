@@ -69,11 +69,6 @@ public class Cache extends BaseOperator {
         this.inputMap = inputMap;
     }
 
-    private void outputMessage(Message message) {
-        message.output(cacheOutput, null);
-        message.output(metaOutput, null);
-    }
-
     private void outputMessage(Message message, List<Map<String, Object>> messages) {
         if (compressOutput) {
             try {
@@ -117,7 +112,6 @@ public class Cache extends BaseOperator {
                 }
             }
         }
-        outputMessage(message);
         if (batchPos.equals(batchPosEnd)) {
             messages.add(msg);
             if (!messages2.isEmpty()) {
