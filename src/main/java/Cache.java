@@ -50,7 +50,8 @@ public class Cache extends BaseOperator {
     private final Map<String, String> inputMap;
     private final List<Map<String, Object>> messages = new ArrayList<>();
     private final List<Map<String, Object>> messages2 = new ArrayList<>();
-    private final String cacheOutput = "output";
+    private final String cacheOutput = "data";
+    private final String metaOutput = "meta_data";
 
     public Cache(String timeInput, String batchPosInput, String batchPosStart, String batchPosEnd, long timeWindow, boolean compressOutput, Set<String> inputSources, Map<String, String> inputMap) throws Exception {
         if (timeInput == null || timeInput.isBlank()) {
