@@ -18,6 +18,7 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import org.apache.kafka.common.protocol.types.Field;
 import org.infai.ses.senergy.exceptions.NoValueException;
 import org.infai.ses.senergy.operators.BaseOperator;
 import org.infai.ses.senergy.operators.Message;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.HashMap;
 import java.util.zip.GZIPOutputStream;
 
@@ -45,12 +47,13 @@ public class Cache extends BaseOperator {
     private final boolean compressOutput;
     private long currentTimestamp;
     private long startTimestamp = -1;
+    private final Set<String> inputSources;
     private final Map<String, String> inputMap;
     private final List<Map<String, Object>> messages = new ArrayList<>();
     private final List<Map<String, Object>> messages2 = new ArrayList<>();
     private final String cacheOutput = "output";
 
-    public Cache(String timeInput, String batchPosInput, String batchPosStart, String batchPosEnd, long timeWindow, boolean compressOutput, Map<String, String> inputMap) throws Exception {
+    public Cache(String timeInput, String batchPosInput, String batchPosStart, String batchPosEnd, long timeWindow, boolean compressOutput, Set<String> inputSources, Map<String, String> inputMap) throws Exception {
         if (timeInput == null || timeInput.isBlank()) {
             throw new Exception("invalid time_input: " + timeInput);
         }
@@ -69,6 +72,7 @@ public class Cache extends BaseOperator {
         this.batchPosEnd = batchPosEnd;
         this.timeWindow = timeWindow * 1000;
         this.compressOutput = compressOutput;
+        this.inputSources = inputSources;
         this.inputMap = inputMap;
     }
 
