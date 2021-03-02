@@ -22,9 +22,9 @@ import org.infai.ses.senergy.utils.ConfigProvider;
 public class Operator {
 
     public static void main(String[] args) throws Exception {
-        InputParser parser = new InputParser();
+        InputParser inputParser = new InputParser();
         Config config = ConfigProvider.getConfig();
-        parser.parse(config.getInputTopicsConfigs());
+        inputParser.parse(config.getInputTopicsConfigs());
         Cache cache = new Cache(
                 config.getConfigValue("time_input", null),
                 config.getConfigValue("batch_pos_input", null),
@@ -32,7 +32,7 @@ public class Operator {
                 config.getConfigValue("batch_pos_end", null),
                 Long.parseLong(config.getConfigValue("time_window", "0")),
                 Boolean.parseBoolean(config.getConfigValue("compress_output", "false")),
-                parser.getInputs()
+                inputParser.getInputs()
         );
         Stream stream  = new Stream();
         stream.start(cache);
