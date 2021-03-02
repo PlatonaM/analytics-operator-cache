@@ -15,24 +15,17 @@
  */
 
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import org.infai.ses.senergy.exceptions.NoValueException;
 import org.infai.ses.senergy.operators.BaseOperator;
 import org.infai.ses.senergy.operators.Message;
 import org.infai.ses.senergy.util.DateParser;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
-import java.util.zip.GZIPOutputStream;
 
 
 public class Cache extends BaseOperator {
@@ -76,27 +69,6 @@ public class Cache extends BaseOperator {
         this.inputMap = inputMap;
     }
 
-    private String compress(String str) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
-        gzipOutputStream.write(str.getBytes());
-        gzipOutputStream.close();
-        byte[] bytes = outputStream.toByteArray();
-        return Base64.getEncoder().withoutPadding().encodeToString(bytes);
-    }
-
-    private String toJSON(Set<String> data) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        Type collectionType = new TypeToken<Set<String>>(){}.getType();
-        return gson.toJson(data, collectionType);
-    }
-
-    private String toJSON(List<Map<String, Object>> data) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        Type collectionType = new TypeToken<List<Map<String, Object>>>(){}.getType();
-        return gson.toJson(data, collectionType);
-    }
-
     private void outputMessage(Message message) {
         message.output(cacheOutput, null);
         message.output(metaOutput, null);
@@ -105,14 +77,14 @@ public class Cache extends BaseOperator {
     private void outputMessage(Message message, List<Map<String, Object>> messages) {
         if (compressOutput) {
             try {
-                message.output(cacheOutput, compress(toJSON(messages)));
+                message.output(cacheOutput, Util.compress(Util.toJSON(messages)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            message.output(cacheOutput, toJSON(messages));
+            message.output(cacheOutput, Util.toJSON(messages));
         }
-        message.output(metaOutput, toJSON(inputSources));
+        message.output(metaOutput, Util.toJSON(inputSources));
     }
 
     @Override
