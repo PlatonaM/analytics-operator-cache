@@ -121,12 +121,10 @@ public class Cache extends BaseOperator {
         if (batchPos.equals(batchPosEnd)) {
             messages.add(msg);
             if (!messages2.isEmpty()) {
-//                System.out.println("send window: " + messages2.size() + " and remainders: " + messages.size());
                 messages2.addAll(messages);
                 outputMessage(message, messages2);
                 messages2.clear();
             } else {
-//                System.out.println("send remainders: " + messages.size());
                 outputMessage(message, messages);
             }
             messages.clear();
@@ -135,11 +133,9 @@ public class Cache extends BaseOperator {
                 if (currentTimestamp - startTimestamp >= timeWindow) {
                     startTimestamp = currentTimestamp;
                     if (!messages2.isEmpty()) {
-//                        System.out.println("send window: " + messages2.size());
                         outputMessage(message, messages2);
                         messages2.clear();
                     }
-//                    System.out.println("store window: " + messages.size());
                     messages2.addAll(messages);
                     messages.clear();
                 }
