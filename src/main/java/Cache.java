@@ -38,13 +38,12 @@ public class Cache extends BaseOperator {
     private final long timeWindow;
     private final boolean compressOutput;
     private long currentTimestamp;
+    private String currentTimestampRaw = null;
     private long startTimestamp = -1;
     private final Set<String> inputSources;
     private final Map<String, String> inputMap;
     private final List<Map<String, Object>> messages = new ArrayList<>();
     private final List<Map<String, Object>> messages2 = new ArrayList<>();
-    private final String cacheOutput = "data";
-    private final String metaOutput = "meta_data";
 
     public Cache(String timeInput, String batchPosInput, String batchPosStart, String batchPosEnd, long timeWindow, boolean compressOutput, Set<String> inputSources, Map<String, String> inputMap) throws Exception {
         if (timeInput == null || timeInput.isBlank()) {
@@ -72,69 +71,77 @@ public class Cache extends BaseOperator {
     private void outputMessage(Message message, List<Map<String, Object>> messages) {
         if (compressOutput) {
             try {
-                message.output(cacheOutput, Util.compress(Util.toJSON(messages)));
+                message.output("data", Util.compress(Util.toJSON(messages)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            message.output(cacheOutput, Util.toJSON(messages));
+            message.output("data", Util.toJSON(messages));
         }
-        message.output(metaOutput, Util.toJSON(inputSources));
+        message.output("meta_data", Util.toJSON(inputSources));
     }
 
     @Override
     public void run(Message message) {
-        Map<String, Object> msg = new HashMap<>();
-        for (Map.Entry<String, String> entry : inputMap.entrySet()) {
-            try {
-                Object valueObj = message.getInput(entry.getKey()).getValue(Object.class);
-                if (!entry.getKey().equals(batchPosInput)) {
-                    msg.put(entry.getValue(), valueObj);
-                }
-                if (entry.getKey().equals(timeInput)) {
-                    currentTimestamp = DateParser.parseDateMills((String) valueObj);
-                    if (startTimestamp < 0) {
-                        startTimestamp = currentTimestamp;
+        try {
+            Map<String, Object> msg = new HashMap<>();
+            for (Map.Entry<String, String> entry : inputMap.entrySet()) {
+                try {
+                    Object valueObj = message.getInput(entry.getKey()).getValue(Object.class);
+                    if (!entry.getKey().equals(batchPosInput)) {
+                        msg.put(entry.getValue(), valueObj);
                     }
-                }
-                if (entry.getKey().equals(batchPosInput)) {
-                    batchPos = (String) valueObj;
-                    if (batchPos.equals(batchPosStart)) {
-                        System.out.println("received start of batch data");
+                    if (entry.getKey().equals(timeInput)) {
+                        currentTimestampRaw = (String) valueObj;
+                        currentTimestamp = DateParser.parseDateMills(currentTimestampRaw);
+                        if (startTimestamp < 0) {
+                            startTimestamp = currentTimestamp;
+                        }
+                    } else if (entry.getKey().equals(batchPosInput)) {
+                        batchPos = (String) valueObj;
                     }
-                    if (batchPos.equals(batchPosEnd)) {
-                        System.out.println("received end of batch data");
+                } catch (NoValueException e) {
+                    if (entry.getKey().equals(timeInput)) {
+                        throw e;
+                    } else if (entry.getKey().equals(batchPosInput)) {
+                        batchPos = "";
+                    } else {
+                        msg.put(entry.getValue(), null);
                     }
-                }
-            } catch (NoValueException e) {
-                if (!entry.getKey().equals(batchPosInput)) {
-                    msg.put(entry.getValue(), null);
                 }
             }
-        }
-        if (batchPos.equals(batchPosEnd)) {
-            messages.add(msg);
-            if (!messages2.isEmpty()) {
-                messages2.addAll(messages);
-                outputMessage(message, messages2);
-                messages2.clear();
-            } else {
-                outputMessage(message, messages);
+            if (batchPos.equals(batchPosStart)) {
+                System.out.println("received start of batch data with timestamp '" + currentTimestampRaw + "'");
             }
-            messages.clear();
-        } else {
-            if (timeWindow > 0) {
-                if (currentTimestamp - startTimestamp >= timeWindow) {
-                    startTimestamp = currentTimestamp;
-                    if (!messages2.isEmpty()) {
-                        outputMessage(message, messages2);
-                        messages2.clear();
-                    }
+            if (batchPos.equals(batchPosEnd)) {
+                System.out.println("received end of batch data with timestamp '" + currentTimestampRaw + "'");
+                currentTimestampRaw = null;
+                messages.add(msg);
+                if (!messages2.isEmpty()) {
                     messages2.addAll(messages);
-                    messages.clear();
+                    outputMessage(message, messages2);
+                    messages2.clear();
+                } else {
+                    outputMessage(message, messages);
                 }
+                messages.clear();
+            } else {
+                if (timeWindow > 0) {
+                    if (currentTimestamp - startTimestamp >= timeWindow) {
+                        startTimestamp = currentTimestamp;
+                        if (!messages2.isEmpty()) {
+                            outputMessage(message, messages2);
+                            messages2.clear();
+                        }
+                        messages2.addAll(messages);
+                        messages.clear();
+                    }
+                }
+                messages.add(msg);
             }
-            messages.add(msg);
+        } catch (Throwable t) {
+            System.out.println("error handling message near timestamp '" + currentTimestampRaw + "':");
+            t.printStackTrace();
         }
     }
 
