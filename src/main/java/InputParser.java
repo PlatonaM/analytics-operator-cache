@@ -18,16 +18,15 @@ import org.infai.ses.senergy.models.InputTopicModel;
 import org.infai.ses.senergy.models.MappingModel;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 import java.util.List;
 
 
 public class InputParser {
 
     private final Map<String, String> inputMap = new HashMap<>();
-    private final Set<String> inputSources = new HashSet<>();
+    private final List<Map<String, Object>> inputSources = new ArrayList<>();
 
     public void parse(List<InputTopicModel> inputTopics) {
         String sep = "\\.";
@@ -37,7 +36,10 @@ public class InputParser {
                 String[] source = mapping.getSource().split(sep);
                 inputMap.put(mapping.getDest(), source[source.length - 1]);
             }
-            inputSources.add(inputTopic.getFilterValue());
+            Map<String, Object> inputSource = new HashMap<>();
+            inputSource.put("id", inputTopic.getFilterValue());
+            inputSource.put("name", inputTopic.getName());
+            inputSources.add(inputSource);
         }
     }
 
@@ -45,7 +47,7 @@ public class InputParser {
         return inputMap;
     }
 
-    public Set<String> getInputSources() {
+    public List<Map<String, Object>> getInputSources() {
         return inputSources;
     }
 }
