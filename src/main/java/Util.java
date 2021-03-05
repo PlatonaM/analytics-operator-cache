@@ -24,7 +24,6 @@ import java.lang.reflect.Type;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
 
@@ -38,9 +37,9 @@ public class Util {
         return Base64.getEncoder().withoutPadding().encodeToString(bytes);
     }
 
-    public static String toJSON(Set<String> data) {
+    public static String toJSON(Map<String, Object> data) {
         Gson gson = new GsonBuilder().serializeNulls().create();
-        Type collectionType = new TypeToken<Set<String>>(){}.getType();
+        Type collectionType = new TypeToken<Map<String, Object>>(){}.getType();
         return gson.toJson(data, collectionType);
     }
 

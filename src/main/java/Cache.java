@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.HashMap;
 
 
@@ -40,12 +39,12 @@ public class Cache extends BaseOperator {
     private long currentTimestamp;
     private String currentTimestampRaw = null;
     private long startTimestamp = -1;
-    private final Set<String> inputSources;
     private final Map<String, String> inputMap;
     private final List<Map<String, Object>> messages = new ArrayList<>();
     private final List<Map<String, Object>> messages2 = new ArrayList<>();
+    private final Map<String, Object> metaData = new HashMap<>();
 
-    public Cache(String timeInput, String batchPosInput, String batchPosStart, String batchPosEnd, long timeWindow, boolean compressOutput, Set<String> inputSources, Map<String, String> inputMap) throws Exception {
+    public Cache(String timeInput, String batchPosInput, String batchPosStart, String batchPosEnd, long timeWindow, boolean compressOutput, List<Map<String, Object>> inputSources, Map<String, String> inputMap) throws Exception {
         if (timeInput == null || timeInput.isBlank()) {
             throw new Exception("invalid time_input: " + timeInput);
         }
@@ -64,8 +63,8 @@ public class Cache extends BaseOperator {
         this.batchPosEnd = batchPosEnd;
         this.timeWindow = timeWindow * 1000;
         this.compressOutput = compressOutput;
-        this.inputSources = inputSources;
         this.inputMap = inputMap;
+        this.metaData.put("input_sources", inputSources);
     }
 
     private void outputMessage(Message message, List<Map<String, Object>> messages) {
@@ -78,7 +77,7 @@ public class Cache extends BaseOperator {
         } else {
             message.output("data", Util.toJSON(messages));
         }
-        message.output("meta_data", Util.toJSON(inputSources));
+        message.output("meta_data", Util.toJSON(metaData));
     }
 
     @Override
