@@ -17,10 +17,10 @@
 import org.infai.ses.senergy.models.InputTopicModel;
 import org.infai.ses.senergy.models.MappingModel;
 
-import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class InputParser {
