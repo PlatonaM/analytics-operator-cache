@@ -22,9 +22,9 @@ import org.infai.ses.senergy.util.DateParser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 
 public class Cache extends BaseOperator {
@@ -33,16 +33,16 @@ public class Cache extends BaseOperator {
     private final String batchPosInput;
     private final String batchPosStart;
     private final String batchPosEnd;
-    private String batchPos;
     private final long timeWindow;
     private final boolean compressOutput;
-    private long currentTimestamp;
-    private String currentTimestampRaw = null;
-    private long startTimestamp = -1;
     private final Map<String, String> inputMap;
     private final List<Map<String, Object>> messages = new ArrayList<>();
     private final List<Map<String, Object>> messages2 = new ArrayList<>();
     private final Map<String, Object> metaData = new HashMap<>();
+    private String batchPos;
+    private long currentTimestamp;
+    private String currentTimestampRaw = null;
+    private long startTimestamp = -1;
 
     public Cache(String timeInput, String batchPosInput, String batchPosStart, String batchPosEnd, long timeWindow, boolean compressOutput, List<Map<String, Object>> inputSources, Map<String, String> inputMap) throws Exception {
         if (timeInput == null || timeInput.isBlank()) {
