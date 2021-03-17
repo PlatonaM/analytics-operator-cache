@@ -35,7 +35,7 @@ public class Operator {
                 inputParser.getInputSources(),
                 inputParser.getInputs()
         );
-        Stream stream  = new Stream();
+        Stream stream = new Stream();
         stream.start(cache);
     }
 }
