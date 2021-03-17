@@ -39,13 +39,15 @@ public class Util {
 
     public static String toJSON(Map<String, Object> data) {
         Gson gson = new GsonBuilder().serializeNulls().create();
-        Type collectionType = new TypeToken<Map<String, Object>>(){}.getType();
+        Type collectionType = new TypeToken<Map<String, Object>>() {
+        }.getType();
         return gson.toJson(data, collectionType);
     }
 
     public static String toJSON(List<Map<String, Object>> data) {
         Gson gson = new GsonBuilder().serializeNulls().create();
-        Type collectionType = new TypeToken<List<Map<String, Object>>>(){}.getType();
+        Type collectionType = new TypeToken<List<Map<String, Object>>>() {
+        }.getType();
         return gson.toJson(data, collectionType);
     }
 }
