@@ -26,6 +26,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.infai.ses.platonam.util.Compression.compress;
+import static org.infai.ses.platonam.util.Json.toJSON;
+import static org.infai.ses.platonam.util.Logger.getLogger;
+
 
 public class Cache extends BaseOperator {
 
@@ -70,14 +74,14 @@ public class Cache extends BaseOperator {
     private void outputMessage(Message message, List<Map<String, Object>> messages) {
         if (compressOutput) {
             try {
-                message.output("data", Util.compress(Util.toJSON(messages)));
+                message.output("data", compress(toJSON(messages)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            message.output("data", Util.toJSON(messages));
+            message.output("data", toJSON(messages));
         }
-        message.output("meta_data", Util.toJSON(metaData));
+        message.output("meta_data", toJSON(metaData));
     }
 
     @Override
