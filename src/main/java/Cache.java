@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static org.infai.ses.platonam.util.Compression.compress;
 import static org.infai.ses.platonam.util.Json.toJSON;
@@ -33,6 +34,7 @@ import static org.infai.ses.platonam.util.Logger.getLogger;
 
 public class Cache extends BaseOperator {
 
+    private static final Logger logger = getLogger(Cache.class.getName());
     private final String timeInput;
     private final String batchPosInput;
     private final String batchPosStart;
@@ -82,6 +84,7 @@ public class Cache extends BaseOperator {
             message.output("data", toJSON(messages));
         }
         message.output("meta_data", toJSON(metaData));
+        logger.fine("sent window of " + messages.size() + " messages");
     }
 
     @Override
@@ -114,10 +117,10 @@ public class Cache extends BaseOperator {
                 }
             }
             if (batchPos.equals(batchPosStart)) {
-                System.out.println("received start of batch data with timestamp '" + currentTimestampRaw + "'");
+                logger.info("received start of batch data with timestamp '" + currentTimestampRaw + "'");
             }
             if (batchPos.equals(batchPosEnd)) {
-                System.out.println("received end of batch data with timestamp '" + currentTimestampRaw + "'");
+                logger.info("received end of batch data with timestamp '" + currentTimestampRaw + "'");
                 currentTimestampRaw = null;
                 messages.add(msg);
                 if (!messages2.isEmpty()) {
@@ -137,13 +140,14 @@ public class Cache extends BaseOperator {
                             messages2.clear();
                         }
                         messages2.addAll(messages);
+                        logger.fine("stored window of " + messages.size() + " messages");
                         messages.clear();
                     }
                 }
                 messages.add(msg);
             }
         } catch (Throwable t) {
-            System.out.println("error handling message near timestamp '" + currentTimestampRaw + "':");
+            logger.severe("error handling message near timestamp '" + currentTimestampRaw + "':");
             t.printStackTrace();
         }
     }

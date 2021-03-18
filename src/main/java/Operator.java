@@ -15,6 +15,7 @@
  */
 
 
+import org.infai.ses.platonam.util.Logger;
 import org.infai.ses.senergy.operators.Config;
 import org.infai.ses.senergy.operators.Stream;
 import org.infai.ses.senergy.utils.ConfigProvider;
@@ -22,8 +23,9 @@ import org.infai.ses.senergy.utils.ConfigProvider;
 public class Operator {
 
     public static void main(String[] args) throws Exception {
-        InputParser inputParser = new InputParser();
         Config config = ConfigProvider.getConfig();
+        Logger.setup(config.getConfigValue("logging_level", "info"));
+        InputParser inputParser = new InputParser();
         inputParser.parse(config.getInputTopicsConfigs());
         Cache cache = new Cache(
                 config.getConfigValue("time_input", null),
