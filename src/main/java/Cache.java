@@ -73,13 +73,9 @@ public class Cache extends BaseOperator {
         this.metaData.put("input_sources", inputSources);
     }
 
-    private void outputMessage(Message message, List<Map<String, Object>> messages) {
+    private void outputMessage(Message message, List<Map<String, Object>> messages) throws IOException {
         if (compressOutput) {
-            try {
-                message.output("data", compress(toJSON(messages)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            message.output("data", compress(toJSON(messages)));
         } else {
             message.output("data", toJSON(messages));
         }
