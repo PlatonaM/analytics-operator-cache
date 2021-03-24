@@ -15,11 +15,14 @@
  */
 
 
+import org.infai.ses.platonam.util.Compression;
+import org.infai.ses.platonam.util.Json;
 import org.infai.ses.senergy.exceptions.NoValueException;
 import org.infai.ses.senergy.operators.BaseOperator;
 import org.infai.ses.senergy.operators.Message;
 import org.infai.ses.senergy.util.DateParser;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static org.infai.ses.platonam.util.Compression.compress;
-import static org.infai.ses.platonam.util.Json.toJSON;
 import static org.infai.ses.platonam.util.Logger.getLogger;
 
 
@@ -75,11 +76,14 @@ public class Cache extends BaseOperator {
 
     private void outputMessage(Message message, List<Map<String, Object>> messages) throws IOException {
         if (compressOutput) {
-            message.output("data", compress(toJSON(messages)));
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            Json.toStream(messages, Compression.compress(outputStream));
+            outputStream.close();
+            message.output("data", outputStream.toString());
         } else {
-            message.output("data", toJSON(messages));
+            message.output("data", Json.toString(messages));
         }
-        message.output("meta_data", toJSON(metaData));
+        message.output("meta_data", Json.toString(metaData));
         logger.fine("sent window of " + messages.size() + " messages");
     }
 
