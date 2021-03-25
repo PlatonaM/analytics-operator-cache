@@ -15,6 +15,7 @@
  */
 
 
+import com.google.gson.reflect.TypeToken;
 import org.infai.ses.platonam.util.Compression;
 import org.infai.ses.platonam.util.Json;
 import org.infai.ses.senergy.exceptions.NoValueException;
@@ -77,13 +78,16 @@ public class Cache extends BaseOperator {
     private void outputMessage(Message message, List<Map<String, Object>> messages) throws IOException {
         if (compressOutput) {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            Json.toStream(messages, Compression.compress(outputStream));
+            Json.toStream(new TypeToken<Map<String, Object>>() {
+            }, messages, Compression.compress(outputStream));
             outputStream.close();
             message.output("data", outputStream.toString());
         } else {
-            message.output("data", Json.toString(messages));
+            message.output("data", Json.toString(new TypeToken<List<Map<String, Object>>>() {
+            }, messages));
         }
-        message.output("meta_data", Json.toString(metaData));
+        message.output("meta_data", Json.toString(new TypeToken<Map<String, Object>>() {
+        }, metaData));
         logger.fine("sent window of " + messages.size() + " messages");
     }
 
