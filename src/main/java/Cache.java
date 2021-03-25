@@ -79,15 +79,15 @@ public class Cache extends BaseOperator {
         if (compressOutput) {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             Json.toStream(new TypeToken<Map<String, Object>>() {
-            }, messages, Compression.compress(outputStream));
+            }.getType(), messages, Compression.compress(outputStream));
             outputStream.close();
             message.output("data", outputStream.toString());
         } else {
             message.output("data", Json.toString(new TypeToken<List<Map<String, Object>>>() {
-            }, messages));
+            }.getType(), messages));
         }
         message.output("meta_data", Json.toString(new TypeToken<Map<String, Object>>() {
-        }, metaData));
+        }.getType(), metaData));
         logger.fine("sent window of " + messages.size() + " messages");
     }
 
