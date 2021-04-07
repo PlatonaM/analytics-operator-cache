@@ -46,7 +46,6 @@ public class Cache extends BaseOperator {
     private final Map<String, String> inputMap;
     private final List<Map<String, Object>> messages = new ArrayList<>();
     private final List<Map<String, Object>> messages2 = new ArrayList<>();
-    private final Map<String, Object> metaData = new HashMap<>();
     private String batchPos;
     private long currentTimestamp;
     private String currentTimestampRaw = null;
@@ -72,7 +71,6 @@ public class Cache extends BaseOperator {
         this.timeWindow = timeWindow * 1000;
         this.compressOutput = compressOutput;
         this.inputMap = inputMap;
-        this.metaData.put("input_sources", inputSources);
     }
 
     private void outputMessage(Message message, List<Map<String, Object>> messages) throws IOException {
@@ -86,8 +84,6 @@ public class Cache extends BaseOperator {
             message.output("data", Json.toString(new TypeToken<List<Map<String, Object>>>() {
             }.getType(), messages));
         }
-        message.output("meta_data", Json.toString(new TypeToken<Map<String, Object>>() {
-        }.getType(), metaData));
         logger.fine("sent window of " + messages.size() + " messages");
     }
 
