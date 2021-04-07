@@ -51,7 +51,7 @@ public class Cache extends BaseOperator {
     private String currentTimestampRaw = null;
     private long startTimestamp = -1;
 
-    public Cache(String timeInput, String batchPosInput, String batchPosStart, String batchPosEnd, long timeWindow, boolean compressOutput, List<Map<String, Object>> inputSources, Map<String, String> inputMap) throws Exception {
+    public Cache(String timeInput, String batchPosInput, String batchPosStart, String batchPosEnd, long timeWindow, boolean compressOutput, Map<String, String> inputMap) throws Exception {
         if (timeInput == null || timeInput.isBlank()) {
             throw new Exception("invalid time_input: " + timeInput);
         }
