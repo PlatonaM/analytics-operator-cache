@@ -34,7 +34,8 @@ public class Operator {
                 config.getConfigValue("batch_pos_end", null),
                 Long.parseLong(config.getConfigValue("time_window", "0")),
                 Boolean.parseBoolean(config.getConfigValue("compressed_output", "false")),
-                inputParser.getInputs()
+                inputParser.getInputs(),
+                config.getConfigValue("nested_map_inputs", null)
         );
         Stream stream = new Stream();
         stream.start(cache);

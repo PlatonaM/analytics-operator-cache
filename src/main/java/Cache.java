@@ -25,10 +25,7 @@ import org.infai.ses.senergy.util.DateParser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static org.infai.ses.platonam.util.Logger.getLogger;
@@ -46,12 +43,13 @@ public class Cache extends BaseOperator {
     private final Map<String, String> inputMap;
     private final List<Map<String, Object>> messages = new ArrayList<>();
     private final List<Map<String, Object>> messages2 = new ArrayList<>();
+    private final Set<String> nestedMapInputs;
     private String batchPos;
     private long currentTimestamp;
     private String currentTimestampRaw = null;
     private long startTimestamp = -1;
 
-    public Cache(String timeInput, String batchPosInput, String batchPosStart, String batchPosEnd, long timeWindow, boolean compressOutput, Map<String, String> inputMap) throws Exception {
+    public Cache(String timeInput, String batchPosInput, String batchPosStart, String batchPosEnd, long timeWindow, boolean compressOutput, Map<String, String> inputMap, String nestedMapInputs) throws Exception {
         if (timeInput == null || timeInput.isBlank()) {
             throw new Exception("invalid time_input: " + timeInput);
         }
@@ -71,6 +69,8 @@ public class Cache extends BaseOperator {
         this.timeWindow = timeWindow * 1000;
         this.compressOutput = compressOutput;
         this.inputMap = inputMap;
+        this.nestedMapInputs = nestedMapInputs != null ? Json.fromString(nestedMapInputs, new TypeToken<>() {
+        }) : Collections.emptySet();
     }
 
     private void outputMessage(Message message, List<Map<String, Object>> messages) throws IOException {
@@ -93,18 +93,21 @@ public class Cache extends BaseOperator {
             Map<String, Object> msg = new HashMap<>();
             for (Map.Entry<String, String> entry : inputMap.entrySet()) {
                 try {
-                    Object valueObj = message.getInput(entry.getKey()).getValue(Object.class);
-                    if (!entry.getKey().equals(batchPosInput)) {
-                        msg.put(entry.getValue(), valueObj);
-                    }
-                    if (entry.getKey().equals(timeInput)) {
-                        currentTimestampRaw = (String) valueObj;
+                    if (nestedMapInputs.contains(entry.getKey())) {
+                        Map<String, Object> nestedMap = Json.fromString(message.getInput(entry.getKey()).getString(), new TypeToken<>() {
+                        });
+                        msg.putAll(nestedMap);
+                    } else if (entry.getKey().equals(batchPosInput)) {
+                        batchPos = message.getInput(entry.getKey()).getString();
+                    } else if (entry.getKey().equals(timeInput)) {
+                        currentTimestampRaw = message.getInput(entry.getKey()).getString();
                         currentTimestamp = DateParser.parseDateMills(currentTimestampRaw);
                         if (startTimestamp < 0) {
                             startTimestamp = currentTimestamp;
                         }
-                    } else if (entry.getKey().equals(batchPosInput)) {
-                        batchPos = (String) valueObj;
+                        msg.put(entry.getValue(), currentTimestampRaw);
+                    } else {
+                        msg.put(entry.getValue(), message.getInput(entry.getKey()).getValue(Object.class));
                     }
                 } catch (NoValueException e) {
                     if (entry.getKey().equals(timeInput)) {
