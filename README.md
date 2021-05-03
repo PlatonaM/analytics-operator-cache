@@ -10,4 +10,5 @@ Cache messages from a batch upload and output collected messages as a single mes
 + `batch_pos_end`: keyword for batch end.
 + `time_window`: relative window in seconds for caching messages.
 + `compressed_output`: compressed output messages `true` / `false`.
-
++ `nested_map_inputs`: list of inputs with nested maps.
++ `logging_level`:
