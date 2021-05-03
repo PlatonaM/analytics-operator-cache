@@ -79,9 +79,9 @@ public class Cache extends BaseOperator {
             Json.toStream(new TypeToken<Map<String, Object>>() {
             }.getType(), messages, Compression.compress(outputStream));
             outputStream.close();
-            message.output("data", outputStream.toString());
+            message.output("cached_data", outputStream.toString());
         } else {
-            message.output("data", Json.toString(new TypeToken<List<Map<String, Object>>>() {
+            message.output("cached_data", Json.toString(new TypeToken<List<Map<String, Object>>>() {
             }.getType(), messages));
         }
         logger.fine("sent window of " + messages.size() + " messages");
